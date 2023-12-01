@@ -1,20 +1,38 @@
+
 import Data.List
+import Data.List.Split
 import Data.Maybe
+import Text.Read -- readMaybe
 
 main = do
   contents <- readFile "input.txt"
-  print $ sum $ map getCalibrationValue (lines  (contents))
+  print $ sum $ map getCalibrationValue' $ (lines (contents))
 
-
-getCalibrationValue :: String -> Int
-getCalibrationValue s = case length digits of
-                          1 -> read (digits ++ digits) :: Int
-                          2 -> read (digits) :: Int
-                          _ -> read [head digits, last digits] :: Int
+getCalibrationValue' :: String -> Int
+getCalibrationValue' s = read d :: Int
   where
-    digits = filter (\x -> elem x ['1'..'9']) s
+    d = concat $ map show $ getCalibrationValue s
 
+a = getCalibrationValue' "two1nine"
+b = getCalibrationValue' "eightwothree"
+c = getCalibrationValue' "abcone2threexyz"
+d = getCalibrationValue' "xtwone3four"
+f = getCalibrationValue' "4nineeightseven2"
+e = getCalibrationValue' "zoneight234"
+g = getCalibrationValue' "7pqrstsixteen"
 
+getCalibrationValue :: String -> [Int]
+getCalibrationValue s =
+  case length listOfDigits of
+    1 -> listOfDigits ++ listOfDigits
+    2 -> listOfDigits
+    _ -> [(head listOfDigits)] ++ [last listOfDigits]
+  where
+    listOfDigits = concat $ map t $ split (oneOf ['1'..'9']) s -- list of
+    t = \x -> case readMaybe x :: Maybe Int of
+                Just d -> [d]
+                Nothing -> findSpelledOutDigits x
+           
 
 -- part 2 digits spelled out in letters
 -- need to split on digits => check if words in between
