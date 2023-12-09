@@ -3,7 +3,8 @@ let
 in
 myNixPkgs.mkShell {
   nativeBuildInputs = with myNixPkgs; [
-    (ghc.withPackages (pkgs: with pkgs; [ split ]))
+    (ghc.withPackages (pkgs: with pkgs; [ split matrix ]))
+    pkgs.haskell-language-server 
   ];
 }
 
