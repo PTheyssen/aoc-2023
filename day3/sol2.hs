@@ -10,8 +10,9 @@ main = do
   print $ sum digits
 
 
-filterDigits :: Matrix Char -> Matrix (Int, Bool)
-filterDigits m = mapPos (\(r,c) e -> case checkDigit (r,c) e m of
+-- need gear ratio * that is next two digits exactly
+filterGears :: Matrix Char -> Matrix (Int, [(Int, Int)])
+filterGears m = mapPos (\(r,c) e -> case checkDigit (r,c) e m of
                                        True -> case readMaybe [e] :: Maybe Int of
                                                  Nothing -> (-1, False)
                                                  Just d -> (d, True)
