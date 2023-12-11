@@ -6,6 +6,8 @@ main = do
   contents <- readFile "input.txt"
   let l = lines contents
   let seeds = drop 1 $ splitOn " " (head $ take 1 l)
+  let allSeeds = generateSeeds seeds
+  print $ length allSeeds
   let seedToSoilMap = parseMap' "seed-to-soil map:" l
   let soilToFertilizerMap = parseMap' "soil-to-fertilizer map:" l
   let fertilizerToWaterMap = parseMap' "fertilizer-to-water map:" l
@@ -24,9 +26,21 @@ main = do
                 . soilToFertilizerMap
                 . seedToSoilMap
             )
-            seeds
+            allSeeds
   let sol = minimum locations
   print sol
+
+
+-- TODO to inefficient => need to operate on intervals and then only generate final interval
+generateSeeds :: [String] -> [String]
+generateSeeds s = concat $ map (\p -> fun (p!!0) (p!!1))  $ chunksOf 2 s
+                  where
+                    fun s1 s2 =
+                      let i1 = read s1 :: Int in
+                        let i2 = read s2 :: Int in
+                          map show [i1..i1+i2-1]
+
+-- process 2 at a time 
 
 parseMap :: String -> [String] -> [String]
 parseMap s = takeWhile (/= "") . dropWhile (/= s)
