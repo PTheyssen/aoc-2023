@@ -6,7 +6,7 @@ main = do
   contents <- readFile "input.txt"
   let l = lines contents
   let seeds = drop 1 $ splitOn " " (head $ take 1 l)
-  let allSeeds = generateSeeds seeds
+  let allSeeds = generateSeedsIntervals seeds
   print $ length allSeeds
   let seedToSoilMap = parseMap' "seed-to-soil map:" l
   let soilToFertilizerMap = parseMap' "soil-to-fertilizer map:" l
@@ -30,18 +30,31 @@ main = do
   let sol = minimum locations
   print sol
 
-
 -- TODO to inefficient => need to operate on intervals and then only generate final interval
-generateSeeds :: [String] -> [String]
-generateSeeds s = concat $ map (\p -> fun (p!!0) (p!!1))  $ chunksOf 2 s
-                  where
-                    fun s1 s2 =
-                      let i1 = read s1 :: Int in
-                        let i2 = read s2 :: Int in
-                          map show [i1..i1+i2-1]
+generateSeedsIntervals :: [String] -> [String]
+generateSeedsIntervals s = concat $ map (\p -> fun (p !! 0) (p !! 1)) $ chunksOf 2 s
+  where
+    fun s1 s2 =
+      let i1 = read s1 :: Int
+       in let i2 = read s2 :: Int
+           in map show [i1 .. i1 + i2 - 1]
 
--- process 2 at a time 
+testseeds = ["2906961955", "52237479", "1600322402", "372221628", "2347782594", "164705568", "541904540", "89745770", "126821306", "192539923", "3411274151", "496169308", "919015581", "8667739", "654599767", "160781040", "3945616935", "85197451", "999146581", "344584779"]
 
+generateSeedsIntervals' :: [String] -> [(Int, Int)]
+generateSeedsIntervals' s = map (\p -> fun (p !! 0) (p !! 1)) $ chunksOf 2 s
+  where
+    fun :: String -> String -> (Int, Int)
+    fun s1 s2 =
+      let i1 = read s1 :: Int
+       in let i2 = read s2 :: Int
+           in (i1, i1 + i2)
+
+-- (1, 5) (
+combineIntervals :: [(Int, Int)] -> (Int, Int)
+combineIntervals intervals = foldl (\i1 i2 -> 
+
+-- process 2 at a time
 parseMap :: String -> [String] -> [String]
 parseMap s = takeWhile (/= "") . dropWhile (/= s)
 
@@ -56,7 +69,7 @@ createMapFunction s = map (\l -> fun (l !! 0, l !! 1, l !! 2)) ranges
     fun (dest, source, len) x =
       let num = read x :: Int
        in ( if source <= num && (source + len) >= num
-              then Just $ show (num - source + dest)                   
+              then Just $ show (num - source + dest)
               else Nothing
           )
 
@@ -68,7 +81,6 @@ applyMap m =
         Nothing -> inp
         (Just x) -> x
   )
-
 
 testin =
   [ "seeds: 79 14 55 13",
